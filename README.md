@@ -1,1 +1,2 @@
-# Spatial_PointPatternTornado Data Project
+# Spatial_PointPattern
+# Tornado Data Project
