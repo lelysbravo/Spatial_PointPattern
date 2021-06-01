@@ -1,2 +1,4 @@
 # Tornado Data Project
-# Repository for the Blackwel Reserach Scholars Project
+## Repository for the Blackwel Research Scholars Project
+## Summer 2021
+
