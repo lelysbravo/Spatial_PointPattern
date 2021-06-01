@@ -1,0 +1,79 @@
+
+## Get familiar with ppp objects
+
+```{r}
+library(spatstat)
+library(EnviroStat)
+data("ozone.NY")
+data("location.NY")
+O3=ozone.NY
+loc=location.NY
+#Convert to a ppp object
+loc.ppp=ppp(loc$long,loc$lat,c(-76,-73),c(42,44))
+print(loc.ppp)
+summary(loc.ppp)
+class(loc.ppp)
+coords.ppp(loc.ppp)
+plot(loc.ppp)
+```
+```{r}
+#Manipulate a ppp object
+# amacrine data set
+help(amacrine)
+plot(amacrine)
+Frame(amacrine)
+Window(amacrine)
+as.data.frame(amacrine)
+boundingbox(amacrine)
+identify(amacrine)
+# longleaf data set
+help("longleaf")
+plot(longleaf)
+A=colourmap(heat.colors(128),range=range(marks(longleaf)))
+plot(longleaf,pch=21,bg=A,cex=1)
+juveniles <- subset(longleaf, marks <= 30)
+a = plot(longleaf, maxsize=15) 
+plot(juveniles, symap=a)
+```
+```{r}
+#Assign Marks to a ppp object
+X = redwood
+marks(X) = nndist(X)
+#Extracting subsets of a Point Pattern
+#By Index
+summary(bei)
+bei[1:20]
+bei[-c(1,5,7)]
+swedishpines[nndist(swedishpines) > 10]
+longleaf[marks(longleaf) >= 42]
+longleaf[c(FALSE,TRUE)] #logical vector recycled
+#By Window
+W <- owin(c(100,800), c(100,400))
+W
+bei[W]
+#By Expression
+subset(cells, x > 0.5 & y < 0.4)
+subset(longleaf, marks >= 42)
+subset(finpines, diameter > 2 & height < 4)
+subset(finpines, diameter > 2, select=height)
+subset(nbfires, year == 1999, select=cause:fnl.size)
+subset(finpines, select = -height)
+
+#Manipulating Marks
+plot(unmark(anemones)) 
+radii = rexp(npoints(redwood), rate=10)
+plot(redwood %mark% radii)
+#Adding Marks
+X = amacrine
+marks(X) = data.frame(type=marks(X), nn=nndist(amacrine))
+Y = finpines
+vol = with(marks(Y), (100 * pi/12) * height * diameter^2)
+marks(Y) = cbind(marks(Y), volume=vol)
+# Using the function cut to categorize Marks
+Y = cut(longleaf, breaks=c(0, 5, 20, Inf))
+Y
+Y= cut(longleaf, breaks=3)
+Y
+plot(Y)
+```
+

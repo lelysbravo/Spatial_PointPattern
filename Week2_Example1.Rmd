@@ -1,0 +1,142 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+# Geographic Data in R (Chapter 2: Geocomputations in R)
+
+<https://geocompr.robinlovelace.net/spatial-class.html#crs-intro>
+
+## Install packages
+
+```{r}
+install.packages("sf")
+install.packages("raster")
+install.packages("spData")
+remotes::install_github("Nowosad/spDataLarge")
+```
+## Load libraries
+
+```{r}
+library(sf)
+library(raster)
+library(spData)
+library(spDataLarge)
+# Load some vignettes
+vignette(package = "sf")
+vignette("sf1")
+```
+
+# Vector Data
+## Load the `world` data set from spData
+
+```{r}
+names(world) #last column contains geographic info
+world$geom
+summary(world["lifeExp"])
+world_mini = world[1:2, 1:3]
+world_mini
+# Plotting multiple variables
+plot(world[3:6])
+# Plotting a single variable
+plot(world["pop"])
+```
+## Add maps as layers
+
+```{r}
+world_asia = world[world$continent == "Asia", ]
+asia = st_union(world_asia)
+plot(world["pop"], reset = FALSE)
+plot(asia, add = TRUE, col = "red")
+```
+
+## Converting a polygon to point with st_centroid
+
+```{r}
+plot(world["continent"], reset = FALSE)
+cex = sqrt(world$pop) / 10000
+world_cents = st_centroid(world, of_largest = TRUE)
+plot(st_geometry(world_cents), add = TRUE, cex = cex)
+```
+
+## Add geographic features like a window expansion
+
+```{r}
+india = world[world$name_long == "India", ]
+plot(st_geometry(india), expandBB = c(0, 0.2, 0.1, 1), col = "gray", lwd = 3)
+plot(world_asia[0], add = TRUE)
+```
+
+Simple feature objects:
+
+* A point: st_point()
+* A linestring: st_linestring()
+* A polygon: st_polygon()
+* A multipoint: st_multipoint()
+* A multilinestring: st_multilinestring()
+* A multipolygon: st_multipolygon()
+* A geometry collection: st_geometrycollection()
+
+
+## sf object structure
+
+### we will represent a temperature of 25°C in London on June 21st, 2017
+
+```{r}
+lnd_point = st_point(c(0.1, 51.5))                 # sfg object (simple feature geometry)
+lnd_geom = st_sfc(lnd_point, crs = 4326)           # sfc object (simple feature column)
+lnd_attrib = data.frame(                           # data.frame object
+  name = "London",
+  temperature = 25,
+  date = as.Date("2017-06-21")
+  )
+lnd_sf = st_sf(lnd_attrib, geometry = lnd_geom)    # sf object
+lnd_sf
+class(lnd_sf)
+```
+# Raster Data
+
+### Read data from a file
+
+```{r}
+help("raster-package")
+# Load Zion National park digital elevation model
+raster_filepath = system.file("raster/srtm.tif", package = "spDataLarge")
+new_raster = raster(raster_filepath)
+new_raster
+plot(new_raster)
+```
+
+
+## Creat a raster file from scratch
+
+```{r}
+new_raster2 = raster(nrows = 6, ncols = 6, res = 0.5,xmn = -1.5, xmx = 1.5, ymn = -1.5, ymx = 1.5, vals = 1:36)
+```
+
+
+## Multiple raster layers
+
+```{r}
+multi_raster_file = system.file("raster/landsat.tif", package = "spDataLarge")
+r_brick = brick(multi_raster_file)
+r_brick
+nlayers(r_brick)
+```
+
+
+# Coordinate Reference Systems
+
+* Geographic coordinate system: Latitude and longitude. Earth represented by an spherical or ellipsoidal surface.
+* Two main ways to describe CRS in R are an `epsg` code or a `proj4string` definition
+* Projected CRSs are based on Cartesian coordinates on an implicitly flat surface. They have an origin, x and y axes, and a linear unit of measurement such as meters. 
+
+```{r}
+crs_data = rgdal::make_EPSG()
+View(crs_data)
+vector_filepath = system.file("vector/zion.gpkg", package = "spDataLarge")
+new_vector = st_read(vector_filepath)
+st_crs(new_vector) # get CRS
+projection(new_raster) # get CRS from a raster
+```
+
