@@ -1,4 +1,4 @@
-
+hi!
 ## Get familiar with ppp objects
 
 ```{r}
