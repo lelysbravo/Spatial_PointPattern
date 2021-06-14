@@ -1,8 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
 
 ## Get familiar with ppp objects
 
@@ -80,5 +75,30 @@ Y
 Y= cut(longleaf, breaks=3)
 Y
 plot(Y)
+```
+
+## Macey's CSR Practice
+
+```{r}
+# Simulate a Completely Spatial Random Process in a region D: [0,1] x [0,1]
+library(spatstat)
+library(sf)
+CSR <- rpoispp(lambda = 10, win = owin(c(0, 1), c(0, 1)))  
+summary(CSR)
+# for (i in 1:1000) {
+#     CSR[[i]] <- rpoispp(lamda=10, win = owin(c(0, 1), c(0, 1)))
+# }
+# try a nested for loop
+n=1:5
+for (i in n){
+  for (j in n){
+    CSR[[i]] <- rpoispp(lambda=1, win = owin(c(0, 1), c(0, 1))) 
+    CSR[[i]] <- rpoispp(lambda=2, win = owin(c(0, 1), c(0, 1)))
+    CSR[[i]] <- rpoispp(lambda=3, win = owin(c(0, 1), c(0, 1)))
+    CSR[[i]] <- rpoispp(lambda=4, win = owin(c(0, 1), c(0, 1)))
+    CSR[[i]] <- rpoispp(lambda=5, win = owin(c(0, 1), c(0, 1))) 
+  }
+  print(CSR[[i]])
+}
 ```
 
