@@ -10,7 +10,7 @@ library(spatstat)
 ```{r}
 # Simulating a Binomial Point process with n=8
 plot(runifpoint(8,square(1),nsim=10))
-#Simulating an inhomogeneous Poisson process with varying intensity
+#Simulating an in-homogeneous Poisson process with varying intensity
 par(mfrow=c(1,2))
 lambda =function(x,y) { 100 * (x^2+y) }
 Z=as.im(lambda, unit.square())
