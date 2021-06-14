@@ -1,0 +1,118 @@
+
+## Point patterns simulation
+
+
+```{r}
+library(spatstat)
+```
+
+
+```{r}
+# Simulating a Binomial Point process with n=8
+plot(runifpoint(8,square(1),nsim=10))
+#Simulating an in-homogeneous Poisson process with varying intensity
+par(mfrow=c(1,2))
+lambda =function(x,y) { 100 * (x^2+y) }
+Z=as.im(lambda, unit.square())
+X=rpoispp(Z)
+plot.im(Z)
+plot(X)
+```
+## Estimating a homogeneous intensity
+
+```{r}
+#Calculation of the mean intensity for the swedishpines data set
+npoints(swedishpines)/area(Window(swedishpines))
+intensity(swedishpines)
+unitname(swedishpines) #units of  0.1 meters
+intensity(rescale(swedishpines)) # Reescaled to the units of meters
+# Calculation of the standard error
+X=rescale(swedishpines)
+lam = intensity(X)
+sdX= sqrt(lam/area(Window(X)))
+sdX
+```
+
+## Quadrat Counts Homogeneity test
+
+```{r}
+#Quadrat Count
+swp= rescale(swedishpines)
+Q3= quadratcount(swp, nx=3, ny=3)
+Q3
+par(mfrow=c(1,2))
+plot(Q3)
+L3=intensity(Q3, image=TRUE) 
+plot(L3)
+dev.off()
+# Quadrat test
+tS= quadrat.test(swp, 3,3) 
+tS
+plot(tS)
+```
+
+## Intensity estimation using kernel functions
+
+```{r}
+# Intensity estimation using a 
+#Gaussian kernel function
+den=density(swp,sigma=1)
+#Plotting the density function
+par(mfrow=c(1,2))
+persp.im(den,col="gray")
+contour.im(den)
+#Optimizing the bandwidth selection
+#using the  Diggle and Berman's method
+D = density(swp, sigma=bw.diggle)
+persp.im(D,col="gray")
+contour.im(D)
+```
+
+## Using covariates to analyze the intensity of the process
+
+```{r}
+#Using covariates to analyze the intensity 
+#of the process
+summary(bei)
+help("bei")
+elev = bei.extra$elev #Get elevation from bei.extra
+b = quantile(elev, probs=(0:4)/4, type=2)
+Zcut = cut(elev, breaks=b, labels=1:4) 
+V = tess(image=Zcut) #Creates a tessellation
+textureplot(V)
+#Quadratcount works with tesselations
+qb = quadratcount(bei, tess=V)
+qb
+quadrat.test(qb)#chi-square test using tesselations
+#Dividing elevation into equal length intervals
+b5= seq(0, 5 * ceiling(max(elev)/5), by=5)
+Zcut5 = cut(elev, breaks=b5, include.lowest=TRUE)
+Q5 = quadratcount(bei, tess=tess(image=Zcut5)) 
+lam5 = intensity(Q5) #Estimate intensity for each elevation interval
+barplot(lam5,xlab="Elevation",ylab="Intensity")
+#rho function estimation
+rh= rhohat(bei, elev) #Estimate intensity as a function of elevation
+print(rh) #Information about rh
+plot(rh) #plot rho vs point elevations
+#Producing an image of rho
+plot(predict(rh)*1000,main="",col=terrain.colors(15)) 
+rhf =as.function(rh)
+rhf(130) #Evaluation of rho at a given elevation
+#rho estimate validation
+pred = predict(rh) 
+kden = density.ppp(bei, 50)
+Window(pred) #Get window
+Window(kden) #Get window
+Window(kden)=Window(pred) #Make windows compatible
+pairs(pred,kden)
+plot(eval.im(kden - pred),col=terrain.colors(15),main="")
+#Using elevation and gradient to estimate the intensity
+#data set: bei.extra
+help(bei.extra)
+summary(bei.extra) #two images: elevation and gradient
+with(bei.extra, rho2hat(bei, grad, elev)) 
+#Testing CSR using exact values of elevation 
+cdf=cdf.test(bei, elev)
+plot(cdf)
+```
+
