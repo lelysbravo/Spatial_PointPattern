@@ -1,0 +1,59 @@
+---
+title: "bei Elevation Exercises"
+author: "Macey Dodd"
+date: "6/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(spatstat)
+```
+
+```{r}
+help("bei")
+```
+
+
+```{r}
+summary(bei)
+```
+
+
+```{r}
+# plot tree locations independent of covariate
+plot(bei$x, bei$y, xlab="Width (metres)", ylab="Height (metres)", main="Width vs. Height for Tropical Rainforest Tree Patterns") 
+```
+
+```{r}
+# plot tree locations versus elevation
+elev = bei.extra$elev 
+image(elev, main="Width vs. Height for Tropical Rainforest Elevation", xlab="Width (metres)", ylab="Height (metres)")
+```
+
+```{r}
+# find the 0 % 25 % 50 % 75 % 100% quantiles
+b = quantile(elev, probs=(0:4)/4, type=2)
+# classifying the elevation based on the quantiles which are being done on sorted data from smallest to largest
+# this operation discretizes continuous data into discrete variable bins 
+Zcut = cut(elev, breaks=b, labels=1:4) 
+V = tess(image=Zcut) #creates a tessellation
+textureplot(V)
+```
+
+
+
+```{r}
+# test CSR by performing Quadrant Counting Test of Homogeneity 
+qb = quadratcount(bei, tess=V)
+qb
+quadrat.test(qb) #chi-square test using tesselations
+```
+
+
+```{r}
+# test based on exact values of elevation
+cdf=cdf.test(bei, elev)
+plot(cdf)
+```
+
