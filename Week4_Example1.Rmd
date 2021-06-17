@@ -1,0 +1,69 @@
+
+
+```{r}
+library(spatstat)
+```
+
+
+## Testing CSR using exact covariate points
+
+```{r}
+swp= rescale(swedishpines)
+summary(bei)
+help("bei")
+elev = bei.extra$elev 
+#Testing CSR by comparing distributions of elevation 
+#at bei locations
+cdf=cdf.test(bei, elev)
+cdf
+plot(cdf)
+plot(cdf,style="QQ")
+plot(cdf,style="PP")
+#Comparing distributions of the x coordinate for 
+#the swedishpines data set
+cdf.test(swp,"x")
+```
+
+
+## Estimate the K function and inspect the resulting object
+
+```{r}
+#K function estimation
+plot(swedishpines)
+plot(Kest(swedishpines))
+plot(Kest(rescale(swedishpines)))
+#K function estimate
+Ks = Kest(swedishpines)
+Ks #Object of class fv
+plot(Ks, iso ~ r) #Plot the isotropic correction estimate
+plot(Ks, . / theo	~ r) #Divide each estimate by the theoretical K function
+plot(Ks, . ~ theo) #Compare with theoretical
+lambda = intensity(swedishpines) 
+plot(Ks, lambda * . ~ r) #Average number of trees surrounding a typical tree
+Ks = Kest(swedishpines)
+K = as.function(Ks)
+K(9) # Evaluate at a particular value of r
+```
+
+## Fitting point process models
+
+```{r}
+# Fit a stationary point process with Strauss dependence
+ppm(swedishpines,~1,Strauss(7))
+u=ppm(swedishpines,~1,Strauss(7))
+coef(u)
+exp(coef(u))
+#Fit an in-homogeneous Point process with log intensity
+#depending on x
+ppm(swedishpines,~x)
+#log intensity as a function of a factor covariate
+ppm(swedishpines,~factor(ifelse(x<50,"left","right")))
+# Examine a fitted model
+fit=ppm(swedishpines,~1,Strauss(7))
+fit
+plot(fit)
+pf=predict(fit)
+coef(fit)
+exp(coef(fit))
+```
+
