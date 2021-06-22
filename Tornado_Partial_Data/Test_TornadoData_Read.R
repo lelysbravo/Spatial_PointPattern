@@ -1,3 +1,18 @@
+library(spatstat)
+library(raster)
+library(rasterVis)
+library(ncdf4)
+library(reshape2)
+library(dplyr)
+library(plyr)
+library(maptools)
+library(maps)
+library(sf)
+library(tigris)
+library(astsa)
+library(TSA)
+library(mapproj)
+library(viridis)
 ## Testing load .RData files
 #Load STP files Year 1987, Quarter 2
 STPXXX=get(load("~/tornado_project/VNc1987Q2.RData"))
