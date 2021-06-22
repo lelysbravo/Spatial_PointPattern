@@ -1,0 +1,48 @@
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(spatstat)
+```
+
+```{r}
+help("bei")
+#help function
+```
+
+
+```{r}
+summary(bei)
+#summary function
+```
+
+
+```{r}
+plot(bei$x, bei$y, xlab="Width (metres)", ylab="Height (metres)", main="Tropical Rainforest Tree Patterns") 
+#this describes width and height of various tropical rainforest trees (can be important predictor/parameter)
+```
+
+```{r}
+# plot tree locations versus elevation
+grad = bei.extra$grad 
+image(grad, xlab="Width (metres)", ylab="Height (metres)", main="Width vs. Height for Tropical Rainforest Grad")
+```
+
+```{r}
+# find the 0 % 25 % 50 % 75 % 100% quantiles
+b = quantile(grad, probs=(0:4)/4, type=2)
+# classifying the elevation based on the quantiles which are being done on sorted data from smallest to largest
+# this operation discretizes continuous data into discrete variable bins 
+Zcut = cut(grad, breaks=b, labels=1:4) 
+V = tess(image=Zcut) #creates a tessellation with quantiles for each region
+textureplot(V)
+```
+
+
+
+```{r}
+# test CSR by performing Quadrant Counting Test of Homogeneity 
+qb = quadratcount(bei, tess=V)
+qb
+quadrat.test(qb) #chi-square test using tesselations
+```
+
