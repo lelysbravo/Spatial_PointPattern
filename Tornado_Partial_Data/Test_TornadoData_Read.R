@@ -25,13 +25,22 @@ reports1987<-readRDS("Tornado_Partial_Data/reports-1987.rds")
 STP2011<-readRDS("Tornado_Partial_Data/STPSUMAX2011.rds")
 reports2011<-readRDS("Tornado_Partial_Data/reports-2011.rds")
 #
+# Estimate intensities
+intensity(unmark(reports1987[[1]]))
+intensity(unmark(reports1987[[2]]))
+intensity(unmark(reports1987[[3]]))
+intensity(unmark(reports1987[[4]]))
+intensity(unmark(reports2011[[1]]))
+intensity(unmark(reports2011[[2]]))
+intensity(unmark(reports2011[[3]]))
+intensity(unmark(reports2011[[4]]))
 # Plot STP files Year 1987 Quarter 2 ----
-#plot(STPXXX,col=viridis(10),breaks=c(1,5,10,15,20,25,30,35,40,45,50))
-plot(STP1987[[2]],col=terrain.colors(10),breaks=c(1,5,10,15,20,25,30,35,40,45,50),xlab="Longitude",ylab="Latitude")
+plot(STPXXX,col=viridis(10),breaks=c(1,5,10,15,20,25,30,35,40,45,50))
+#plot(STP1987[[2]],col=terrain.colors(10),breaks=c(1,5,10,15,20,25,30,35,40,45,50),xlab="Longitude",ylab="Latitude")
 data("wrld_simpl")
 map("state",add=TRUE)
 # Plot second quarter reports
-plot(reports1987[[2]],add=TRUE,pch=c(3),cex=0.7)
+plot(reports1987[[2]],add=TRUE,pch=c(3),cex=0.7,color="red")
 
 # Plot STP files Year 2011 Quarter 3 ----
 #plot(STPXXX,col=viridis(10),breaks=c(1,5,10,15,20,25,30,35,40,45,50))
